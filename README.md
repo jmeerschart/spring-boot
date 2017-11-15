@@ -113,11 +113,12 @@ public class TodoController {
 --- 
 # TP1 : Spring Boot : First Application (3)
 
-Accédez à [http://localhost:8080]()
-
 ```
 mvn spring-boot:run
 ```
+
+Accédez à [http://localhost:8080]()
+
 
 ```
   .   ____          _            __ _ _
@@ -325,7 +326,7 @@ logging.level.org.hibernate=ERROR
 
 ---
 # Spring MVC templating :
-- Tempalte
+- Template
 - Static Content
 - Error Handling
 
@@ -370,13 +371,14 @@ In the ```TodoService.java```
 # TP 4 : Spring MVC : REST
 - Configure a ```@RestController```
 
-In the ```TodoService.java```
+In the ```TodoController.java```
 
 ```
-@RequestMapping(value = "/todo", 
-			method= RequestMethod.GET)
-    public TodoModel todo() {
-        return todoService.getTodo();
+
+  @RequestMapping(value = "/todo/{todoId}", 
+  	method = RequestMethod.GET)
+    public TodoModel todo(@PathVariable String todoId) {
+        return todoService.getTodo(todoId);
     }
 ```
 

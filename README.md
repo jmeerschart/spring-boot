@@ -679,8 +679,8 @@ ListenableFuture<User> findOneByLastname(String lastname);
 # TP6 - Spring Data 
 
 - Add ```UserModel``` who contains a list of todos
-- Add a method to ```count``` the ```todoModel``` entities in the database
-- Create a repository / controller / service ```UserModel```
+- Add a method to ```count``` the ```todoModel``` entities in the database with ```todo``` property is ```true```
+- Create a ```UserRepository``` / ```UserController``` / ```UserService```  for ```UserModel``` 
 - To be able to create a ```todoModel``` on a user 
 ``` 
 POST 
@@ -688,7 +688,26 @@ http://localhost:8080/todo/{userId}
 ``` 
 ---
 
-# Spring Data Rest
+# TP7 - Spring Data Rest
+
+[reference](https://spring.io/guides/gs/accessing-data-rest/)
+
+
+``` 
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-data-rest</artifactId>
+</dependency>
+```
+
+Use the Rest repository 
+```
+@RepositoryRestResource(collectionResourceRel = "todo",
+   path = "todo")
+```
+
+Remove all services and controllers.
+
 
 ---
 # Cache

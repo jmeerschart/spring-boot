@@ -383,7 +383,6 @@ In the ```TodoController.java```
 ```
 
 - Add ```POST```, ```PUT```, ```DELETE``` to create, update or delete a TodoModel via the TodoService.
-
 [some help](https://www.leveluplunch.com/java/tutorials/014-post-json-to-spring-rest-webservice/)
 
 ---
@@ -413,9 +412,9 @@ Exemple of an Entity :
 public class Employee {
 
    @Id
-   @GeneratedValue(strategy = GenerationType.AUTO) 	
-   
+   @GeneratedValue(strategy = GenerationType.AUTO) 	   
    private int eid;
+   
    private String ename;
    private double salary;
    private String deg;
@@ -558,7 +557,7 @@ Create your first entity ```TodoModel```:
  private long id;
  ```
  or
- ```
+ ```JAVA
 @Id @GeneratedValue(generator="uuid")
 @GenericGenerator(name = "uuid", strategy = "uuid2")
 private String id;
@@ -675,9 +674,23 @@ CompletableFuture<User> findOneByFirstname(String firstname);
 @Async
 ListenableFuture<User> findOneByLastname(String lastname); 
 ```
-
 ---
 
+# TP6 - Spring Data 
+
+- Add ```UserModel``` who contains a list of todos
+- Add a method to ```count``` the ```todoModel``` entities in the database
+- Create a repository / controller / service ```UserModel```
+- To be able to create a ```todoModel``` on a user 
+``` 
+POST 
+http://localhost:8080/todo/{userId}
+``` 
+---
+
+# Spring Data Rest
+
+---
 # Cache
 # Aspect
 # Spring Security

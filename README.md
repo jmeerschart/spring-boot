@@ -203,6 +203,21 @@ Accédez à l'application [http://localhost:8080]()
 </center>
 
 ---
+# Spring IOC
+
+Commons errors :
+- ```NullPointerException``` : don't instantiate your bean, let spring inject : ```new MyService();```
+- ```NullPointerException``` : don't forget annotation in the class to inject
+- Field todoService in fr.atos.spring.web.TodoController required a bean of type 'fr.atos.spring.service.TodoService' that could not be found.
+
+
+---
+# Spring Commons annotations
+
+- Declare bean : ```@Controller``` ```@Component``` ```@Service``` ```@Repository``` 
+- Inject bean : ```@Autowired``` ```@Resource``` ```@Inject```
+
+---
 
 # TP2 : Structure & IOC
 
@@ -298,17 +313,11 @@ Injection in the controller ```TodoController.java```
  - Active the hot reload
 
 ```
-<plugin>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-maven-plugin</artifactId>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>springloaded</artifactId>
-            <version>1.2.6.RELEASE</version>
-        </dependency>
-    </dependencies>
-</plugin>
+<dependency>
+   <groupId>org.springframework</groupId>
+   <artifactId>springloaded</artifactId>
+   <version>1.2.5.RELEASE</version>
+</dependency>
 
 ```
 

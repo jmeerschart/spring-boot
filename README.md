@@ -70,7 +70,43 @@ Spring-Boot 1.5.x
 - [git bash](https://git-for-windows.github.io/)
 - try with 
  ``` git clone https://github.com/rbonnamy/exemple-spring-boot && cd exemple-spring-boot && mvn spring-boot:run ```
+
 ---
+# Springboot initializer
+
+https://start.spring.io/
+<center>
+
+<img src="img/2018-02-08_11h49_07.png" />
+
+</center>
+
+---
+
+# Springboot CLI
+
+[Getting Started](https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started-installing-spring-boot.html#getting-started-cli-example)
+```
+$ spring init -dweb,jpa,security —build maven
+$ spring run app.groovy
+```
+<center>
+
+<img src="img/spring-boot-cli-example-7.jpg" />
+
+</center>
+
+---
+
+# Spring build system
+
+- maven
+- gradle
+- ant
+
+
+---
+
 # TP1 : Spring Boot : First Application (1)
 In the ```pom.xml``` [https://projects.spring.io/spring-boot/]()
 
@@ -138,15 +174,16 @@ Accédez à l'application [http://localhost:8080]()
 <center>
 <img src="./img/2017-11-09_16h20_16.png"/>
 </center>
-
+			
 --- 
 # About this code
 - ```@EnableAutoConfiguration```: This annotation tells Spring Boot to “guess” how you will want to configure Spring, based on the jar dependencies that you have added
--  ```@RestController```  and ```@RequestMapping``` annotations :  our class is a web @Controller so Spring will consider it when handling incoming web requests
+-  ```@RestController```  and ```@RequestMapping``` annotations :  our class is a web ```@Controller``` so Spring will consider it when handling incoming web requests
 -  ```main``` method
 -  [Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter)
 
 --- 
+
 
 # Spring Beans and dependency injection
 
@@ -157,6 +194,15 @@ Accédez à l'application [http://localhost:8080]()
 </center>
 
 --- 
+# Spring Context : 
+<center>
+	<img width="60%" src="./img/spring-context.png"/>
+</center>
+<center>
+	<img width="70%" src="./img/gL8Ky.jpg"/>
+</center>
+
+---
 
 # TP2 : Structure & IOC
 
@@ -220,8 +266,6 @@ Injection in the controller ```TodoController.java```
     String todo() {
         return todoService.getTodo();
     }
-}
-
 ```
 
 ---
@@ -247,7 +291,39 @@ Injection in the controller ```TodoController.java```
 </dependencies>
 
 ```
+
 ---
+
+# TP3 : Hot reload
+ - Active the hot reload
+
+```
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>springloaded</artifactId>
+            <version>1.2.6.RELEASE</version>
+        </dependency>
+    </dependencies>
+</plugin>
+
+```
+
+---
+
+# TP3 : Hot reload
+ - Intellij : ```ctrl``` ```alt``` ```s``` : build / compile active build project automatically
+ - Intellij : ```ctrl``` ```shift``` ```a```, type registry, turn on ```compiler.automake.allow.when.app.running```
+ - Intellij : run configuration add VM options :
+```
+-javaagent:C:/Users/{user}/.m2/repository/org/springframework/springloaded/1.2.5.RELEASE/springloaded-1.2.5.RELEASE.jar -noverify 
+```
+ 
+---
+
 # TP3 : Propertie File
 
 - ```application.properties ``` allow you to parametrize your spring boot application.
@@ -267,7 +343,7 @@ You also can do the configuration in ```yml```
 
 # Properties
 
-Propertie file :
+Propertie file : (support placeholder ```${var}```)
 ```
 database.url=jdbc:postgresql:/localhost:5432/instance
 database.username=foo
@@ -297,8 +373,45 @@ Any ```@Component``` or ```@Configuration``` can be marked with ```@Profile``` t
 ```application-dev.propertie```
 ```application-prod.propertie```
 
+---
+
+# Configuration - XML 1/2
+- web.xml
+```xml
+<context-param>
+<param-name>contextConfigLocation</param-name>
+<param-value>/WEB-INF/servicesContext.xml /WEB-INF/daoContext.xml
+/WEB-INF/applicationContext.xml</param-value>
+</context-param>
+```
+---
+
+# Configuration - XML 2/2
+- application.xml
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  <bean id="..." class="...">
+    <!-- configuration et description des dependances --> 
+  </bean>
+  <bean id="...' class="...">
+    <!-- configuration et description des dependances --> 
+  </bean>
+</beans>
+```
 
 ---
+
+# Configuration - By class
+
+- ```@Configuration``` : into a single class
+- ```@ComponentScan``` : automatically pick up all Spring components
+- ```@ImportResource``` : annotation to load XML configuration files
+---
+
 # Log Customisation
 Levels : 
 ```
@@ -325,11 +438,101 @@ logging.level.org.hibernate=ERROR
 </center>
 
 ---
-# Spring MVC templating :
-- Template
-- Static Content
-- Error Handling
 
+# Spring MVC
+
+- service static content in ```application.properties```
+```
+spring.mvc.static-path-pattern=/resources/**
+```
+
+- default template location :
+```
+src/main/resources/templates 
+```
+
+---
+
+# Spring MVC - customize generics pages
+
+- custom error pages
+
+```
+src/
+ +- main/
+     +- java/
+     |   + <source code>
+     +- resources/
+         +- public/
+             +- error/
+             |   +- 5xx.ftl
+             |   +- 404.html
+             +- <other public assets>
+
+```
+
+--- 
+
+# Spring MVC - servlet / filter
+
+- Servlet : ```@WebServlet```
+- Filter : ```@WebFilter```
+--- 
+
+# Spring MVC - template engine
+
+- [FreeMarker](https://freemarker.apache.org/docs/)
+- [Groovy](http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine)
+- [Thymeleaf](http://www.thymeleaf.org/)
+- [Mustache](https://mustache.github.io/)
+- JSP limitations : servlet container web is server dependant
+
+
+---
+
+# TP 3.1 - Spring MVC
+
+
+- add pom dependency
+
+```
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+```
+- in controller add the following method :
+```java
+   @RequestMapping("/main")
+    public String main(@RequestParam(value="name", required=false, defaultValue="World") String name, Model model) {
+        model.addAttribute("name", name);
+        return "main";
+    }
+```
+
+---
+
+# TP 3.1 - Spring MVC
+
+ - create template in ```src/main/resources/templates/main.html```
+```xml
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <p th:text="'Hello, ' + ${name} + '!'" />
+</body>
+</html>
+```
+---
+# TP 3.1 Spring MVC - Test
+
+- Create a test using documentation : https://spring.io/guides/gs/testing-web/
+- Use fragment https://dzone.com/articles/spring-boot-thymeleaf-template-decorator-using-thy
+- little more with thymelead : http://www.baeldung.com/thymeleaf-in-spring-mvc 
+- Validation https://spring.io/guides/gs/validating-form-input/
 ---
 
 # Spring MVC : REST
@@ -720,16 +923,62 @@ Remove all services and controllers.
     <artifactId>springfox-swagger2</artifactId>
     <version>2.7.0</version>
 </dependency>
- <dependency>
- <groupId>io.springfox</groupId>
- <artifactId>springfox-swagger-ui</artifactId>     
- <version>2.7.0</version>
+<dependency>
+  <groupId>io.springfox</groupId>
+  <artifactId>springfox-swagger-ui</artifactId>     
+  <version>2.7.0</version>
 </dependency>
 ``` 
-at the url :
+--- 
 
-[http://localhost:8080/swagger-ui.html]()
+# Swagger
 
+```JAVA
+@Configuration
+@EnableSwagger2
+@Import({springfox.documentation.spring.data.rest.configuration.SpringDataRestConfiguration.class})
+public class SwaggerConfig {
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build();
+    }
+}
+```
+at the url : [http://localhost:8080/swagger-ui.html]()
+
+---
+
+# HATEOAS (Hypermedia as the Engine of Application State)
+
+- RESTful API that makes use of hypermedia
+- auto configuration : ```@EnableHypermediaSupport```
+<center>
+
+<img src="img/hal2.PNG" />
+
+</center>
+
+---
+
+# CORS Support
+```
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**");
+            }
+        };
+    }
+```
+<center>
+<img src="img/cors_error.png" />
+</center>
 ---
 
 

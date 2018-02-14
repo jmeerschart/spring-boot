@@ -947,7 +947,7 @@ Use the Rest repository
 @RepositoryRestResource(collectionResourceRel = "todo",
    path = "todo")
 ```
-
+In ```application.properties``` param ```spring.data.rest.basePath=/api```
 
 
 ---
@@ -956,21 +956,21 @@ Use the Rest repository
 [reference](http://www.baeldung.com/swagger-2-documentation-for-spring-rest-api)
 
 ```
-  <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>2.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-data-rest</artifactId>
-            <version>2.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.7.0</version>
-        </dependency>
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger2</artifactId>
+    <version>2.7.0</version>
+</dependency>
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-data-rest</artifactId>
+    <version>2.7.0</version>
+</dependency>
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger-ui</artifactId>
+    <version>2.7.0</version>
+</dependency>
 ``` 
 --- 
 
@@ -991,7 +991,7 @@ public class SwaggerConfig {
     }
 }
 ```
-at the url : [http://localhost:8080/swagger-ui.html]()
+at the url : [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 ---
 
@@ -1434,7 +1434,7 @@ public class SecurityService{
 
 # TP13 - Spring Security
 
-- try your configuration with ```POST```on ```/login```
+- try your configuration with ```POST``` on ```/login```
 ```json
 {
     "login": "test",
@@ -1442,7 +1442,7 @@ public class SecurityService{
     "roles" : "USER,ADMIN"
 }
 ```
-- try to connect with ```GET```like ```http://localhost:8080/login?login=test&pwd=test1```
+- try to connect with ```GET``` like ```http://localhost:8080/login?login=test&pwd=test1```
 - play with 
 ---
 
@@ -1451,10 +1451,3 @@ public class SecurityService{
 
 resource - [spring security angular](https://spring.io/guides/tutorials/spring-security-and-angular-js/)
 
---- 
-
----
-
-### Spring Data Flow
-
-[http://www.baeldung.com/spring-cloud-data-flow-stream-processing]()

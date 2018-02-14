@@ -948,7 +948,6 @@ Use the Rest repository
    path = "todo")
 ```
 
-Remove all services and controllers.
 
 
 ---
@@ -957,16 +956,21 @@ Remove all services and controllers.
 [reference](http://www.baeldung.com/swagger-2-documentation-for-spring-rest-api)
 
 ```
-<dependency>
-    <groupId>io.springfox</groupId>
-    <artifactId>springfox-swagger2</artifactId>
-    <version>2.7.0</version>
-</dependency>
-<dependency>
-  <groupId>io.springfox</groupId>
-  <artifactId>springfox-swagger-ui</artifactId>     
-  <version>2.7.0</version>
-</dependency>
+  <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-data-rest</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.7.0</version>
+        </dependency>
 ``` 
 --- 
 

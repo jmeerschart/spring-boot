@@ -227,8 +227,9 @@ fr
  +- todo     
       +- Application.java
       |
-      +- domain
+      +- model
       |   +- TodoModel.java
+      +- repository
       |   +- TodoRepository.java
       |
       +- service
@@ -318,7 +319,6 @@ Injection in the controller ```TodoController.java```
    <artifactId>springloaded</artifactId>
    <version>1.2.5.RELEASE</version>
 </dependency>
-
 ```
 
 ---
@@ -328,7 +328,7 @@ Injection in the controller ```TodoController.java```
  - Intellij : ```ctrl``` ```shift``` ```a```, type registry, turn on ```compiler.automake.allow.when.app.running```
  - Intellij : run configuration add VM options :
 ```
--javaagent:C:/Users/{user}/.m2/repository/org/springframework/springloaded/1.2.5.RELEASE/springloaded-1.2.5.RELEASE.jar -noverify 
+-javaagent:C:/Users/%UserProfile%/.m2/repository/org/springframework/springloaded/1.2.5.RELEASE/springloaded-1.2.5.RELEASE.jar -noverify 
 ```
  
 ---
@@ -378,9 +378,9 @@ Any ```@Component``` or ```@Configuration``` can be marked with ```@Profile``` t
 - In the command line
 ```--spring.profiles.active=dev,hsqldb```
 - Profils in properties files : 
-```application.propertie```
-```application-dev.propertie```
-```application-prod.propertie```
+```application.properties```
+```application-dev.properties```
+```application-prod.properties```
 
 ---
 
@@ -388,8 +388,8 @@ Any ```@Component``` or ```@Configuration``` can be marked with ```@Profile``` t
 - web.xml
 ```xml
 <context-param>
-<param-name>contextConfigLocation</param-name>
-<param-value>/WEB-INF/servicesContext.xml /WEB-INF/daoContext.xml
+   <param-name>contextConfigLocation</param-name>
+   <param-value>/WEB-INF/servicesContext.xml /WEB-INF/daoContext.xml
 /WEB-INF/applicationContext.xml</param-value>
 </context-param>
 ```
@@ -789,7 +789,7 @@ public interface TodoRepository
 }
 
 ```
-Show your ```TodoRepository``` interface
+Show your ```CrudRepository``` interface
 
 ```
 @NoRepositoryBean
@@ -813,6 +813,29 @@ private TodoRepository todoRepository;
 <center>
 <img width="400px" src="./img/3035-uncle-sam-pointing-design.png"/>
 </center>
+
+---
+
+# TP5 - Database Migration
+
+- in ```pom.xml```
+```
+<dependency>
+   <groupId>org.flywaydb</groupId>
+   <artifactId>flyway-core</artifactId>
+</dependency>
+```
+- create folder ```src/main/resources/db/migration```
+- add file ```V1__init.sql``` with content :
+
+```
+CREATE TABLE TODO (
+  id varchar(80) NOT NULL AUTO_INCREMENT,
+  text varchar(250),
+  todo BOOLEAN
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+```
 
 ---
 
@@ -861,13 +884,20 @@ interface PersonRepository extends Repository<User, Long> {
 
 # Spring Data : Stream
 
+- ```@Query``` 
+```
+@Query("select u from User u where u.age = ?#{[0]}")
+List<User> findUsersByAge(int age);
+
+@Query("select u from User u where u.firstname = :#{#customer.firstname}")
+List<User> findUsersByCustomersFirstname(@Param("customer") Customer customer);
+```
+
 Stream the result of a query with Java 8 ```Stream<T>```
 
 ```
 @Query("select u from User u")
 Stream<User> findAllByCustomQueryAndStream();
-
-Stream<User> readAllByFirstnameNotNull();
 
 @Query("select u from User u")
 Stream<User> streamAllPaged(Pageable pageable);
@@ -875,7 +905,7 @@ Stream<User> streamAllPaged(Pageable pageable);
 ---
 
 # Spring Data : async
-- This means the method will return immediately upon invocation and the actual query execution will occur in a task that has been submitted to a Spring TaskExecutor.
+- This means the method will return immediately upon invocation and the actual query execution will occur in a task that has been submitted to a Spring TaskExecutor. [exemple](https://spring.io/guides/gs/async-method/)
 ```
 @Async
 Future<User> findByFirstname(String firstname);               
@@ -922,7 +952,7 @@ Remove all services and controllers.
 
 
 ---
-# Swagger
+# TP 8 - Swagger
 
 [reference](http://www.baeldung.com/swagger-2-documentation-for-spring-rest-api)
 
@@ -940,7 +970,7 @@ Remove all services and controllers.
 ``` 
 --- 
 
-# Swagger
+# TP 8 - Swagger
 
 ```JAVA
 @Configuration
@@ -961,15 +991,36 @@ at the url : [http://localhost:8080/swagger-ui.html]()
 
 ---
 
-# HATEOAS (Hypermedia as the Engine of Application State)
+# TP 8 - HATEOAS 
 
+- Hypermedia as the Engine of Application State
 - RESTful API that makes use of hypermedia
 - auto configuration : ```@EnableHypermediaSupport```
+- use ```@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)```
 <center>
 
 <img src="img/hal2.PNG" />
 
 </center>
+
+---
+# TP9 - Use on front end
+
+- Use only res repository
+
+``` 
+// create instance
+curl -i -X POST -H "Content-Type:application/json" -d "{\"text\":\"Have to finish this TP\"}" http://localhost:8080/api/todo
+// create instance
+curl -i -X POST -H "Content-Type:application/json" -d "{\"login\":\"myLog\",\"pwd\":\"myPassword\"}" http://localhost:8080/api/user
+// create link
+curl -i -X PUT -d "http://localhost:8080/api/user/59d5c56b-29a8-4a44-be0f-8b52750e64ba" -H "Content-Type:text/uri-list" http://localhost:8080/api/todo/c1ec0efa-6561-4924-81f6-e6062d1af3a8/user
+```
+
+[resource](
+http://www.baeldung.com/spring-data-rest-relationships)
+
+[front](http://jsfiddle.net/Julien_Meerschart/1j66vaLa/2/)
 
 ---
 
@@ -988,15 +1039,416 @@ at the url : [http://localhost:8080/swagger-ui.html]()
 <center>
 <img src="img/cors_error.png" />
 </center>
+
 ---
 
+# TP10 - CORS Filter
 
+```java
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class CorsFilter implements Filter {
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletResponse response = (HttpServletResponse) res;
+        HttpServletRequest request = (HttpServletRequest) req;
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods",
+                "ACL, CANCELUPLOAD, CHECKIN, CHECKOUT, COPY, DELETE, GET, HEAD, LOCK, MKCALENDAR, MKCOL, MOVE, OPTIONS, POST, PROPFIND, PROPPATCH, PUT, REPORT, SEARCH, UNCHECKOUT, UNLOCK, UPDATE, VERSION-CONTROL");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers",
+                "Origin, X-Requested-With, Content-Type, Accept, Key, Authorization");
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            chain.doFilter(req, res);
+        }
+    }
+
+    public void init(FilterConfig filterConfig) {
+        // not needed
+    }
+
+    public void destroy() {
+        //not needed
+    }
+
+}
+```
+
+---
+
+# Bean validation 
+
+- bean validation : https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#validation-beanvalidation-overview
+- custom validator : https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#validator
+
+--- 
 # Cache
+
+- add configuration on your ```Application``` class ```@EnableCaching```
+- TTL depend cache system, exemple with ```caffeine``` on [sources](http://dolszewski.com/spring/multiple-ttl-caches-in-spring-boot/)
+- List of supported [providers](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-caching.html)
+
+--- 
+# TP10 - validation
+
+ - validate your user bean with ```@NotNull``` on the ```pwd```attribute.
+- active sql logs :
+```
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+```
+- active cache configuration with ```@EnableCaching```
+- cache todos controller method with ```@Cacheable("todos")```
+- [resources](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-caching.html)
+
+--- 
+
+# TP11 - Global Error handling
+
+- other methods [resources](http://www.baeldung.com/exception-handling-for-rest-with-spring)
+- add new package ```fr.todo.error```
+- create new ```BusinessException``` class
+```
+
+public class BusinessException extends Exception {
+    private Integer code;
+
+    private String msg;
+    public BusinessException(Integer code, String msg){
+        super(msg);
+        this.code=code;
+        this.msg=msg;
+    }
+
+    public BusinessException(Throwable t){
+        super(t);
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+}
+```
+---
+
+# TP11 - Global Error Handling
+
+- create ```TechnicalException``` class
+```
+public class TechnicalException extends RuntimeException {
+    public TechnicalException(String msg){
+        super(msg);
+    }
+
+    public TechnicalException(Throwable t){
+        super(t);
+    }
+}
+
+```
+---
+
+# TP 11 - Global Error Handling
+
+- add ```RestResponseEntityExceptionHandler``` class
+```
+@ControllerAdvice
+public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(value = { Exception.class })
+    protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
+        Map<String,String> result = new HashMap<String, String>();
+        result.put("msg",ex.getMessage());
+        if(ex instanceof BusinessException){
+            result.put("code",((BusinessException)ex).getCode().toString());
+        }
+        return handleExceptionInternal(ex, result,
+                new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+}
+```
+
+---
+
+# TP 11 - Global Error Handling
+
+- Finaly test in two differentes method add the following code :
+```
+throw new BusinessException(5,"error.todo.notfound");
+```
+
+or 
+```
+throw new RuntimeException("error.technical");
+```
+
+---
+
 # Aspect
+
+- __Pointcut__ : when a call to a method should be intercepted.
+- __Advice__ : the logic that you would want to invoke 
+- __Aspect__ :  combination (Pointcut) and (Advice)
+- __Join Point__ : Join Point is a specific execution instance of an advice
+---
+
+# Aspect
+
+- ```@Before```: execute the Aspect before execution of the method
+- ```@After``` ```@AfterReturning``` ```@AfterThrowing``` :  executes successfully or it throws an exception
+- ```@Around``` : Intercepts the method call and uses joinPoint.proceed() to execute the method
+
+---
+
+# TP12 - Aspect 
+- create an aspect to log the time of all controllers méthod [help](http://www.springboottutorial.com/spring-boot-and-aop-with-spring-boot-starter-aop)
+- add in the ```pom.xml```
+```
+<dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-aop</artifactId>
+     <scope>compile</scope>
+ </dependency>
+ <dependency>
+     <groupId>org.aspectj</groupId>
+     <artifactId>aspectjweaver</artifactId>
+     <scope>compile</scope>
+ </dependency>
+```
+
+--- 
+
+# TP12 - Aspect with annotation
+- add another point cut with ```TrackTime``` annotation
+```
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TrackTime {
+}
+```
+
+--- 
+
 # Spring Security
-# Services
-# Spring MVC
-# Proxy
+
+- 1. Configure Filters
+- 2. Configure Providers
+- 3. Configure Method login
+- 4. Use annotation
+- [full documentation](https://docs.spring.io/spring-security/site/docs/4.2.5.BUILD-SNAPSHOT/reference/htmlsingle/)
+
+---
+
+# Spring security : Annotation 
+
+- Annotations :
+```
+@Secured("IS_AUTHENTICATED_ANONYMOUSLY")
+public Account readAccount(Long id);
+
+@Secured("IS_AUTHENTICATED_ANONYMOUSLY")
+public Account[] findAccounts();
+
+@Secured("ROLE_TELLER")
+public Account post(Account account, double amount);
+}
+```
+---
+
+# Spring security 
+
+- Authorize request
+
+```
+
+http
+.authorizeRequests()                                                                1
+	.antMatchers("/resources/**", "/signup", "/about").permitAll()                  2
+	.antMatchers("/admin/**").hasRole("ADMIN")                                      3
+	.antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")            4
+	.anyRequest().authenticated()                                                   5
+	.and()
+.formLogin();
+
+```
+
+--- 
+
+# TP13 - Spring Security
+
+- add the good dependency
+
+```
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+
+- create new package ```security```
+
+- add ```roles``` attribute in ```UserModel``` class
+```
+private String roles;
+```
+--- 
+
+# TP13 - Spring Security
+- in the ```security``` package add ```SecurityConfiguration``` class :
+```
+
+@EnableWebSecurity
+@Configuration
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/login","/user","/h2/**").permitAll()
+                .anyRequest().authenticated();
+        http.headers().frameOptions().disable();
+    }
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
+    }
+}
+```
+
+--- 
+
+# TP13 - Spring Security
+- in the ```security``` package add ```CustomUserDetailsService``` class :
+```
+
+@Service("customUserDetailsService")
+public class CustomUserDetailsService  implements UserDetailsService{
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserModel user = userRepository.findByLogin(username);
+        if (user == null){
+            throw new UsernameNotFoundException("user not found");
+        }
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<GrantedAuthority>();
+        for (String role : user.getRoles().split(",")){
+            grantedAuthorities.add(new SimpleGrantedAuthority(role));
+        }
+
+        return new User(user.getLogin(), user.getPwd(), grantedAuthorities);
+    }
+}
+```
+--- 
+
+# TP13 - Spring Security
+- in the ```security``` package add ```SecurityService``` class :
+```
+@Service
+public class SecurityService{
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
+
+    public void autologin(String username, String password) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+
+        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+
+        if (usernamePasswordAuthenticationToken.isAuthenticated()) {
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            logger.debug(String.format("Auto login %s successfully!", username));
+        }
+    }
+}
+```
+
+--- 
+
+# TP13 - Spring Security
+
+- Add a new controller ```LoginController```
+- Add the ```/login``` route :
+
+```
+   @Autowired
+    private SecurityService securityService;
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public void todo(@RequestParam String login,@RequestParam String pwd) throws BusinessException {
+        securityService.autologin(login,pwd);
+    }
+```
+--- 
+
+# TP13 - Spring Security
+
+- Modify your ```UserService``` to create a user with a encrypted pwd 
+
+```
+ @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public UserModel addUser(UserModel userModel) {
+        userModel.setPwd(bCryptPasswordEncoder.encode(userModel.getPwd()));
+        return userRepository.save(userModel);
+    }
+```
+
+--- 
+
+# TP13 - Spring Security
+
+- try your configuration with ```POST```on ```/login```
+```json
+{
+    "login": "test",
+    "pwd": "test1",
+    "roles" : "USER,ADMIN"
+}
+```
+- try to connect with ```GET```like ```http://localhost:8080/login?login=test&pwd=test1```
+- play with 
+---
+
+- add ```private String roles;``` in ```UserModel```class
+---
+
+resource - [spring security angular](https://spring.io/guides/tutorials/spring-security-and-angular-js/)
+
+--- 
+
 ---
 
 ### Spring Data Flow
